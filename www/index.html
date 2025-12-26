@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bahria LMS</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="app">
+        <!-- Login Screen -->
+        <div id="login-screen" class="screen active">
+            <div class="login-card">
+                <div class="logo">
+                    <img src="https://www.bahria.edu.pk/wp-content/uploads/2016/05/logo_new.png" alt="Bahria Logo"
+                        width="100">
+                    <h2>Bahria LMS</h2>
+                </div>
+                <form id="login-form">
+                    <div class="input-group">
+                        <label>User ID</label>
+                        <input type="text" id="uid" placeholder="e.g. 01-1342" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Password</label>
+                        <input type="password" id="pass" placeholder="Enter password" required>
+                    </div>
+                    <button type="submit" class="btn-primary">Login</button>
+                    <!-- Hint for Demo -->
+                    <p style="font-size:0.8rem; color:#888; margin-top:10px;">
+                        Admin: admin / admin123 <br>
+                        Student: 01-1342 / pass <br>
+                        Faculty: emp1 / pass
+                    </p>
+                </form>
+                <div id="login-msg"></div>
+            </div>
+        </div>
+
+        <!-- Dashboard Screen -->
+        <div id="dashboard-screen" class="screen">
+            <nav class="navbar">
+                <h3>Bahria LMS - <span id="user-role-display">Student</span></h3>
+                <button id="logout-btn" class="btn-secondary">Logout</button>
+            </nav>
+            <div class="container">
+                <div class="sidebar">
+                    <ul id="sidebar-menu">
+                        <!-- Dynamic Menu Items -->
+                    </ul>
+                </div>
+                <div class="main-content">
+                    <div id="welcome-banner">
+                        <h1>Welcome, <span id="user-name-display">User</span></h1>
+                        <p>Select an option from the menu.</p>
+                    </div>
+
+                    <!-- DYNAMIC SECTIONS -->
+
+                    <!-- Shared: List Courses -->
+                    <div id="courses-section" class="section" style="display:none;">
+                        <h2>My Courses</h2>
+                        <table class="course-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Code</th>
+                                    <th>Course Title</th>
+                                    <th>Credit Hrs</th>
+                                    <th>Majors</th>
+                                    <th>Offered Title</th>
+                                    <th>Class/Section</th>
+                                    <th>Teacher</th>
+                                    <th>Fee Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="course-table-body"></tbody>
+                        </table>
+                    </div>
+
+                    <!-- Student: Enroll -->
+                    <div id="enroll-section" class="section" style="display:none;">
+                        <h2>Register New Course</h2>
+                        <p>Available Courses:</p>
+                        <table class="course-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Code</th>
+                                    <th>Course Title</th>
+                                    <th>Credit Hrs</th>
+                                    <th>Majors</th>
+                                    <th>Class/Section</th>
+                                    <th>Teacher</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="available-course-table-body"></tbody>
+                        </table>
+                    </div>
+
+                    <!-- Admin: Create Course -->
+                    <div id="admin-create-section" class="section" style="display:none;">
+                        <h2>Create New Course</h2>
+                        <div class="form-card">
+                            <div class="form-grid">
+                                <div class="input-group">
+                                    <label>Course Code *</label>
+                                    <input type="text" id="new-course-code" placeholder="e.g., CSC412" required>
+                                </div>
+                                <div class="input-group">
+                                    <label>Course Name *</label>
+                                    <input type="text" id="new-course-name" placeholder="e.g., Data Structures"
+                                        required>
+                                </div>
+                                <div class="input-group">
+                                    <label>Offered Course Title</label>
+                                    <input type="text" id="new-course-offered-title"
+                                        placeholder="Same as Course Name if empty">
+                                </div>
+                                <div class="input-group">
+                                    <label>Credit Hours</label>
+                                    <input type="number" id="new-course-credits" placeholder="3" value="3" min="0"
+                                        max="4">
+                                </div>
+                                <div class="input-group">
+                                    <label>Major</label>
+                                    <input type="text" id="new-course-major" placeholder="e.g., Computer Science or N/A"
+                                        value="N/A">
+                                </div>
+                                <div class="input-group">
+                                    <label>Class/Section</label>
+                                    <input type="text" id="new-course-section"
+                                        placeholder="e.g., BS (CS)-5 (A) Morning">
+                                </div>
+                                <div class="input-group">
+                                    <label>Semester</label>
+                                    <input type="text" id="new-course-semester" placeholder="e.g., Fall-2025">
+                                </div>
+                                <div class="input-group">
+                                    <label>Assign Teacher (ID)</label>
+                                    <input type="text" id="new-course-teacher" placeholder="Teacher ID (optional)">
+                                </div>
+                            </div>
+                            <button class="btn-primary" onclick="app.createCourse()">Create Course</button>
+                        </div>
+                        <div class="form-card" style="margin-top:20px;">
+                            <h3>Reports</h3>
+                            <button class="btn-secondary" onclick="app.downloadUserReport()">Download Organized User
+                                Report (TXT)</button>
+                        </div>
+                    </div>
+
+                    <!-- Admin: Fee Management -->
+                    <div id="admin-fee-section" class="section" style="display:none;">
+                        <h2>Fee Management</h2>
+                        <table class="course-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Student ID</th>
+                                    <th>Student Name</th>
+                                    <th>Program</th>
+                                    <th>Semester</th>
+                                    <th>Fee Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="fee-table-body"></tbody>
+                        </table>
+                    </div>
+
+                    <!-- Admin: Add Student -->
+                    <div id="admin-add-student-section" class="section" style="display:none;">
+                        <h2>Add New Student</h2>
+                        <div class="form-card">
+                            <div class="form-grid">
+                                <div class="input-group">
+                                    <label>User ID *</label>
+                                    <input type="text" id="student-id" placeholder="e.g., S001" required>
+                                </div>
+                                <div class="input-group">
+                                    <label>Password *</label>
+                                    <input type="password" id="student-password" placeholder="Password" required>
+                                </div>
+                                <div class="input-group">
+                                    <label>Full Name *</label>
+                                    <input type="text" id="student-name" placeholder="e.g., HAMZA-ALI KHAN" required>
+                                </div>
+                                <div class="input-group">
+                                    <label>Father Name</label>
+                                    <input type="text" id="student-father" placeholder="Father's Name">
+                                </div>
+                                <div class="input-group">
+                                    <label>Enrollment No</label>
+                                    <input type="text" id="student-enrollment" placeholder="e.g., 01-124251-059">
+                                </div>
+                                <div class="input-group">
+                                    <label>Registration No</label>
+                                    <input type="text" id="student-registration" placeholder="e.g., 83442">
+                                </div>
+                                <div class="input-group">
+                                    <label>Program</label>
+                                    <input type="text" id="student-program" placeholder="e.g., BS (CS)">
+                                </div>
+                                <div class="input-group">
+                                    <label>Intake Semester</label>
+                                    <input type="text" id="student-intake" placeholder="e.g., Spring-2024">
+                                </div>
+                                <div class="input-group">
+                                    <label>Max Semester</label>
+                                    <input type="text" id="student-maxsem" placeholder="e.g., Fall-2029">
+                                </div>
+                                <div class="input-group">
+                                    <label>Degree Duration</label>
+                                    <input type="text" id="student-duration" placeholder="e.g., 4 Years">
+                                </div>
+                                <div class="input-group">
+                                    <label>Mobile No</label>
+                                    <input type="tel" id="student-mobile" placeholder="e.g., 03335977106">
+                                </div>
+                                <div class="input-group">
+                                    <label>Phone No</label>
+                                    <input type="tel" id="student-phone" placeholder="e.g., 03335977166">
+                                </div>
+                                <div class="input-group full-width">
+                                    <label>Personal Email</label>
+                                    <input type="email" id="student-personal-email"
+                                        placeholder="e.g., student@gmail.com">
+                                </div>
+                                <div class="input-group full-width">
+                                    <label>University Email</label>
+                                    <input type="email" id="student-uni-email"
+                                        placeholder="e.g., 01-124251-959@student.bahria.edu.pk">
+                                </div>
+                                <div class="input-group">
+                                    <label>Department</label>
+                                    <input type="text" id="student-department" placeholder="e.g., Computer Science">
+                                </div>
+                                <div class="input-group full-width">
+                                    <label>Current Address</label>
+                                    <textarea id="student-current-address" placeholder="Current Address"
+                                        rows="2"></textarea>
+                                </div>
+                                <div class="input-group full-width">
+                                    <label>Permanent Address</label>
+                                    <textarea id="student-permanent-address" placeholder="Permanent Address"
+                                        rows="2"></textarea>
+                                </div>
+                            </div>
+                            <button class="btn-primary" onclick="app.addStudent()">Add Student</button>
+                        </div>
+                    </div>
+
+                    <!-- Admin: Add Faculty -->
+                    <div id="admin-add-faculty-section" class="section" style="display:none;">
+                        <h2>Add New Faculty</h2>
+                        <div class="form-card">
+                            <div class="form-grid">
+                                <div class="input-group">
+                                    <label>User ID *</label>
+                                    <input type="text" id="faculty-id" placeholder="e.g., F001" required>
+                                </div>
+                                <div class="input-group">
+                                    <label>Password *</label>
+                                    <input type="password" id="faculty-password" placeholder="Password" required>
+                                </div>
+                                <div class="input-group">
+                                    <label>Full Name *</label>
+                                    <input type="text" id="faculty-name" placeholder="Faculty Name" required>
+                                </div>
+                                <div class="input-group">
+                                    <label>Employee ID</label>
+                                    <input type="text" id="faculty-emp-id" placeholder="Employee ID">
+                                </div>
+                                <div class="input-group">
+                                    <label>Department</label>
+                                    <input type="text" id="faculty-department" placeholder="e.g., Computer Science">
+                                </div>
+                                <div class="input-group">
+                                    <label>Designation</label>
+                                    <input type="text" id="faculty-designation" placeholder="e.g., Assistant Professor">
+                                </div>
+                                <div class="input-group full-width">
+                                    <label>Teachable Courses (Semicolon separated)</label>
+                                    <input type="text" id="faculty-teachable" placeholder="e.g., CSC101;CSC201;CSC301">
+                                </div>
+                                <div class="input-group">
+                                    <label>Office Hours</label>
+                                    <input type="text" id="faculty-office-hours" placeholder="e.g., Mon-Fri 2-4 PM">
+                                </div>
+                                <div class="input-group">
+                                    <label>Mobile No</label>
+                                    <input type="tel" id="faculty-mobile" placeholder="Mobile Number">
+                                </div>
+                                <div class="input-group">
+                                    <label>Phone No</label>
+                                    <input type="tel" id="faculty-phone" placeholder="Phone Number">
+                                </div>
+                                <div class="input-group full-width">
+                                    <label>Personal Email</label>
+                                    <input type="email" id="faculty-personal-email" placeholder="Personal Email">
+                                </div>
+                                <div class="input-group full-width">
+                                    <label>University Email</label>
+                                    <input type="email" id="faculty-uni-email" placeholder="University Email">
+                                </div>
+                                <div class="input-group full-width">
+                                    <label>Current Address</label>
+                                    <textarea id="faculty-current-address" placeholder="Current Address"
+                                        rows="2"></textarea>
+                                </div>
+                                <div class="input-group full-width">
+                                    <label>Permanent Address</label>
+                                    <textarea id="faculty-permanent-address" placeholder="Permanent Address"
+                                        rows="2"></textarea>
+                                </div>
+                            </div>
+                            <button class="btn-primary" onclick="app.addFaculty()">Add Faculty</button>
+                        </div>
+                    </div>
+
+                    <!-- Faculty: Add Assignment -->
+                    <div id="faculty-assign-section" class="section" style="display:none;">
+                        <h2>Add Assignment</h2>
+                        <div class="form-card">
+                            <input type="text" id="asg-course-code" placeholder="Target Course Code">
+                            <input type="text" id="asg-title" placeholder="Assignment Title">
+                            <input type="text" id="asg-marks" placeholder="Max Marks">
+                            <input type="text" id="asg-date" placeholder="Deadline">
+                            <button class="btn-primary" onclick="app.addAssignment()">Post Assignment</button>
+                        </div>
+                    </div>
+
+                    <!-- Attendance Section -->
+                    <div id="attendance-section" class="section" style="display:none;">
+                        <h2>Attendance</h2>
+                        <div id="faculty-attendance-controls" style="display:none;">
+                            <div class="form-card">
+                                <div class="form-grid">
+                                    <input type="text" id="att-course-code" placeholder="Course Code">
+                                    <input type="text" id="att-student-id" placeholder="Student ID">
+                                    <input type="date" id="att-date">
+                                    <select id="att-status">
+                                        <option value="true">Present</option>
+                                        <option value="false">Absent</option>
+                                    </select>
+                                </div>
+                                <button class="btn-primary" onclick="app.markAttendance()">Mark Attendance</button>
+                            </div>
+                        </div>
+                        <div class="table-container">
+                            <table class="course-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Course</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="attendance-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Grading Section -->
+                    <div id="grading-section" class="section" style="display:none;">
+                        <h2>Grading & Marks</h2>
+                        <div id="faculty-grading-controls" style="display:none;">
+                            <div class="form-card">
+                                <div class="form-grid">
+                                    <input type="text" id="grade-course-code" placeholder="Course Code">
+                                    <input type="text" id="grade-student-id" placeholder="Student ID">
+                                    <input type="number" id="grade-mid" placeholder="Midterm">
+                                    <input type="number" id="grade-final" placeholder="Final">
+                                    <input type="number" id="grade-asg" placeholder="Assignments">
+                                    <input type="number" id="grade-quiz" placeholder="Quizzes">
+                                </div>
+                                <button class="btn-primary" onclick="app.setGrade()">Save Grade</button>
+                            </div>
+                        </div>
+                        <div class="table-container">
+                            <table class="course-table">
+                                <thead>
+                                    <tr>
+                                        <th>Course</th>
+                                        <th>Mid</th>
+                                        <th>Final</th>
+                                        <th>Asg</th>
+                                        <th>Quiz</th>
+                                        <th>Total</th>
+                                        <th>Grade</th>
+                                        <th>GPA</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="grading-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Seating Plan Section -->
+                    <div id="seating-section" class="section" style="display:none;">
+                        <h2>Exam Seating Plan</h2>
+                        <div id="admin-seating-controls" style="display:none;">
+                            <div class="form-card">
+                                <div class="form-grid">
+                                    <input type="text" id="seat-course-code" placeholder="Course Code">
+                                    <input type="text" id="seat-exam-id" placeholder="Exam ID (e.g. Mid-2025)">
+                                    <input type="date" id="seat-date">
+                                    <input type="text" id="seat-room" placeholder="Room">
+                                </div>
+                                <button class="btn-primary" onclick="app.generateSeating()">Generate Plan</button>
+                            </div>
+                        </div>
+                        <div id="seating-display-card" class="form-card" style="display:none;">
+                            <h3>Plan Details: <span id="seat-info"></span></h3>
+                            <table class="course-table">
+                                <thead>
+                                    <tr>
+                                        <th>Student ID</th>
+                                        <th>Seat Number</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="seating-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Fee Challan Section -->
+                    <div id="fee-section" class="section" style="display:none;">
+                        <h2>Fee Challans</h2>
+                        <div id="admin-fee-controls" style="display:none;">
+                            <div class="form-card">
+                                <div class="form-grid">
+                                    <input type="text" id="fee-student-id" placeholder="Student ID">
+                                    <input type="text" id="fee-semester" placeholder="Semester">
+                                    <input type="number" id="fee-tuition" placeholder="Tuition">
+                                    <input type="number" id="fee-lab" placeholder="Lab">
+                                    <input type="number" id="fee-library" placeholder="Library">
+                                    <input type="date" id="fee-due">
+                                </div>
+                                <button class="btn-primary" onclick="app.generateChallan()">Generate Challan</button>
+                            </div>
+                        </div>
+                        <div class="table-container">
+                            <table class="course-table">
+                                <thead>
+                                    <tr>
+                                        <th>Challan ID</th>
+                                        <th>Semester</th>
+                                        <th>Total Amount</th>
+                                        <th>Due Date</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="fee-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- DETAILS MODAL -->
+        <div id="details-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-btn" onclick="app.closeModal()">&times;</span>
+                <h2 id="modal-title">Course Title</h2>
+                <p><strong>Instructor:</strong> <span id="modal-instructor"></span></p>
+                <h3>Assignments</h3>
+                <ul id="modal-assignments-list"></ul>
+            </div>
+        </div>
+
+        <!-- EDIT COURSE MODAL -->
+        <div id="edit-course-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-btn" onclick="app.closeEditModal()">&times;</span>
+                <h2>Edit Course</h2>
+                <div class="form-grid">
+                    <input type="hidden" id="edit-course-code-hidden">
+                    <div class="input-group">
+                        <label>Course Name</label>
+                        <input type="text" id="edit-course-name">
+                    </div>
+                    <div class="input-group">
+                        <label>Offered Title</label>
+                        <input type="text" id="edit-course-offered-title">
+                    </div>
+                    <div class="input-group">
+                        <label>Credit Hours</label>
+                        <input type="number" id="edit-course-credits">
+                    </div>
+                    <div class="input-group">
+                        <label>Major</label>
+                        <input type="text" id="edit-course-major">
+                    </div>
+                    <div class="input-group">
+                        <label>Class/Section</label>
+                        <input type="text" id="edit-course-section">
+                    </div>
+                    <div class="input-group">
+                        <label>Semester</label>
+                        <input type="text" id="edit-course-semester">
+                    </div>
+                    <div class="input-group">
+                        <label>Teacher ID</label>
+                        <input type="text" id="edit-course-teacher">
+                    </div>
+                </div>
+                <button class="btn-primary" onclick="app.submitCourseUpdate()" style="margin-top:20px;">Save
+                    Changes</button>
+            </div>
+        </div>
+
+    </div>
+    <script src="app.js"></script>
+</body>
+
+</html>
